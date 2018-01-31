@@ -19,13 +19,13 @@ func NewBlockchain() *Blockchain {
 func (b *Blockchain) AddNewBlock(data ...string) string {
 	block := NewBlock(b.LastBlockHash, data)
 	err := b.putIntoStorage(block)
-	if err == nil {b.LastBlockHash = block.BlockHash}
+	if err == nil { b.LastBlockHash = block.BlockHash }
 	return block.BlockHash
 }
 
 func (b *Blockchain) putIntoStorage(block Block) error{
 	jsonBlock, err := json.Marshal(block)
-	if err != nil {return err}
+	if err != nil { return err }
 	b.Storage[block.BlockHash] = string(jsonBlock)
 	return nil
 }

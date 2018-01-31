@@ -4,29 +4,42 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"github.com/kateGlebova/simple-blockchain-service/blockchain"
 	"fmt"
+	"strconv"
+	"encoding/json"
 )
 
-var B = blockchain.NewBlockchain()
+type data_input struct {
+	Data string
+}
+
+var data = NewData(5)
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/", Hello).Methods("GET")
 	router.HandleFunc("/add_data", AddData).Methods("POST")
-	router.HandleFunc("/last_blocks/{N}", LastBlocks).Methods("GET")
-	B.AddNewBlock("hello", "darling", "come", "here")
-	B.AddNewBlock("add", "data", "somewhere")
-	B.AddNewBlock("I", "love", "you")
-	B.AddNewBlock("bullet", "journal")
-	B.AddNewBlock("hate", "this", "guy")
+	router.HandleFunc("/last_blocks/{n}", LastBlocks).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
-func Hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello world")
+
+func AddData(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var input data_input
+	err := decoder.Decode(&input)
+	if err != nil {
+		panic(err)
+	}
+	defer r.Body.Close()
+	data.AddData(input.Data)
 }
 
-func AddData(w http.ResponseWriter, r *http.Request) {}
-
-func LastBlocks(w http.ResponseWriter, r *http.Request) {}
+func LastBlocks(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	n, err := strconv.Atoi(params["n"])
+	if err != nil {
+		http.NotFound(w, r)
+	}
+	jsonBlocks, _ := json.MarshalIndent(data.GetNLastBlocks(n), "", "	")
+	fmt.Fprintf(w, string(jsonBlocks))
+}
