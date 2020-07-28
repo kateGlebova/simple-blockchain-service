@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kateGlebova/simple-blockchain-service/blockchain"
+	"github.com/ktsymbal/simple-blockchain-service/blockchain"
 	"sync"
 )
 

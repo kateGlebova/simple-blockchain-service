@@ -1,4 +1,4 @@
-package: github.com/kateGlebova/simple-blockchain-service
+package: github.com/ktsymbal/simple-blockchain-service
 import:
 - package: github.com/gorilla/mux
   version: ^1.6.1
